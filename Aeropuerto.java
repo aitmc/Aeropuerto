@@ -29,13 +29,11 @@ public class Aeropuerto {
      * como vuelos estaran ordenados alfabeticamente (Ver resultados de ejecucion)
      */
     public void ordenAerolineasAlfabetico() {
-        StringBuilder sb = new StringBuilder();
         if (!vuelos.isEmpty()) {
             for (Map.Entry<String, Set<Vuelo>> v : vuelos.entrySet()) {
-                System.out.println(v.getKey());
+                System.out.println(v.getKey()+"\n"+v.getValue().toString());
             }
         }
-
     }
 
     /**
@@ -67,7 +65,15 @@ public class Aeropuerto {
      * Devuelve una lista con vuelos regulares con plazas libres
      */
     public List<Vuelo> plazasLibres() {
-        return null;
+        List<Vuelo> conPlazasLibres = new ArrayList<>();
+        for (Map.Entry<String, Set<Vuelo>> m : vuelos.entrySet()) {
+            for (Vuelo v : m.getValue()) {
+                if (v instanceof Regular r && r.getPlazasLibres() > 0) {
+                    conPlazasLibres.add(r);
+                }
+            }
+        }
+        return conPlazasLibres;
     }
 
     /**
@@ -77,7 +83,21 @@ public class Aeropuerto {
      * @param destino Destino del que se debe sacar la estadistica
      */
     public void estadisticaDestino(String destino) {
+        Map<String, Integer> estadisticas = new HashMap<>();
 
+        for (Map.Entry<String, Set<Vuelo>> m : vuelos.entrySet()) {
+            String aerolinea = m.getKey();
+            int totalVuelos = 0;
+            Integer mismoDestino = 0;
+            for (Vuelo v :m.getValue()) {
+                totalVuelos++;
+                if (v.getDestino().equals(destino)) {
+                    mismoDestino++;
+                }
+            }estadisticas.put(aerolinea, mismoDestino);
+
+            System.out.println(mismoDestino + " de cada " + totalVuelos + " vuelos, de la aerolinea " + aerolinea + " vuelan a " + destino);
+        }
     }
 
     /**
@@ -88,7 +108,19 @@ public class Aeropuerto {
      * @return numero de vuelos borrados
      */
     public int borrarVuelosEmpresa(String nifEmpresa) {
-        return 0;
+        int borrados = 0;
+
+        for (Map.Entry<String, Set<Vuelo>> m : vuelos.entrySet()) {
+            Iterator<Vuelo> it = m.getValue().iterator();
+            while (it.hasNext()) {
+                Vuelo v = it.next();
+                if (v instanceof Charter c && c.getNIF().equalsIgnoreCase(nifEmpresa)) {
+                    it.remove();
+                    borrados++;
+                }
+            }
+        }
+        return borrados;
     }
 
     /**
